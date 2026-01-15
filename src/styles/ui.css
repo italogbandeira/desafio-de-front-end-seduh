@@ -1,0 +1,301 @@
+/* ===== Reset / Base ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+/* Tema via CSS vars (default = dark) */
+:root {
+  --bg: #0b0b0b;
+  --fg: #ffffff;
+  --muted: rgba(255, 255, 255, 0.6);
+}
+
+/* ===== Layout ===== */
+.screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.card {
+  width: 100%;
+  max-width: 360px; /* mobile */
+  padding: 40px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* tablet */
+@media (min-width: 600px) {
+  .card {
+    max-width: 420px;
+  }
+}
+
+/* desktop */
+@media (min-width: 1024px) {
+  .card {
+    max-width: 520px;
+  }
+}
+
+/* ===== Home ===== */
+.title {
+  margin: 0;
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  font-size: 14px;
+  opacity: 0.65;
+}
+
+/* Globo (SVG) */
+.globeWrap {
+  margin: 24px 0 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.globeWrap svg {
+  width: 176px;
+  height: 176px;
+  display: block;
+}
+
+/* Grid cidades */
+.cityGrid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 16px;
+  width: 100%;
+}
+
+@media (min-width: 600px) {
+  .cityGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px 24px;
+  }
+}
+
+.cityBtn {
+  border: 0;
+  background: transparent;
+  padding: 6px 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.cityBtn:hover {
+  color: rgba(255, 255, 255, 1);
+  text-decoration: underline;
+}
+
+/* ===== City ===== */
+.topBar {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 16px;
+}
+
+.backLink {
+  color: inherit;
+  font-size: 12px;
+  opacity: 0.7;
+  text-decoration: none;
+}
+.backLink:hover {
+  opacity: 1;
+}
+
+/* Nome + descrição */
+.cityName {
+  margin: 24px 0 0;
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+.weatherDesc {
+  margin: 8px 0 0;
+  font-size: 14px;
+  opacity: 0.6;
+  text-transform: capitalize;
+}
+
+/* Temperatura */
+.temp {
+  margin-top: 18px;
+  font-size: 96px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.unit {
+  font-size: 22px;
+  margin-left: 6px;
+  opacity: 0.7;
+  vertical-align: super;
+}
+
+/* Ícone grande */
+.bigIcon {
+  margin-top: 18px;
+  width: 176px;
+  height: 176px;
+  display: grid;
+  place-items: center;
+}
+
+.iconInvert {
+  filter: invert(1);
+}
+
+/* Slots (Dawn/Morning/Afternoon/Night) */
+.times {
+  margin-top: 42px;
+  width: min(520px, 100%);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 48px;
+  align-items: start;
+}
+
+@media (max-width: 520px) {
+  .times {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px 32px;
+  }
+}
+
+.timeItem {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  text-align: center;
+}
+
+.timeLabel {
+  font-size: 12px;
+  opacity: 0.6;
+  margin: 0;
+}
+
+.slotIcon {
+  width: 22px;
+  height: 22px;
+  display: block;
+  opacity: 0.9;
+}
+
+.timeValue {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Linha de stats (Wind/Sunrise/Sunset/Humidity) */
+.statsRow {
+  margin-top: 46px;
+  width: min(560px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  opacity: 0.65;
+}
+
+.stat {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  text-align: center;
+  min-width: 90px;
+}
+
+.statLabel {
+  font-size: 12px;
+}
+
+.statValue {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.statDivider {
+  width: 1px;
+  height: 26px;
+  background: currentColor;
+  opacity: 0.35;
+}
+
+@media (max-width: 520px) {
+  .statsRow {
+    flex-wrap: wrap;
+    gap: 14px 18px;
+  }
+  .statDivider {
+    display: none;
+  }
+}
+
+/* ===== Ajuste de altura (mobile) ===== */
+/* Em telas baixas, sobe o conteúdo e reduz espaçamentos */
+@media (max-width: 520px) {
+  .screen {
+    padding: 14px; /* era 24px */
+    place-items: start center; /* começa mais em cima */
+  }
+
+  .card {
+    padding: 22px 18px; /* era 40px 24px */
+  }
+
+  .cityName {
+    margin-top: 14px; /* era 24px */
+  }
+
+  .temp {
+    margin-top: 12px; /* era 18px */
+    font-size: 84px;  /* era 96px */
+  }
+
+  .bigIcon {
+    margin-top: 12px; /* era 18px */
+    width: 152px;     /* era 176px */
+    height: 152px;    /* era 176px */
+  }
+
+  .times {
+    margin-top: 24px; /* era 42px */
+  }
+
+  .statsRow {
+    margin-top: 26px; /* era 46px */
+  }
+}
