@@ -1,8 +1,8 @@
 import "../styles/ui.css";
 import { cities } from "../data/cities";
 
-import Screen from "../components/Layout/Screen";
-import Card from "../components/Layout/Card";
+import Screen from "../components/layout/Screen";
+import Card from "../components/layout/Card";
 import Globe from "../components/Home/Globe";
 import CityGrid from "../components/Home/CityGrid";
 
