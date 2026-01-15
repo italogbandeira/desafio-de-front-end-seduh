@@ -50,6 +50,37 @@ function pickSlots(list, timezoneOffsetSeconds) {
   });
 }
 
+/** ✅ min/max do "dia local" (pra setas ↑ ↓) */
+function getTodayMinMax(list, timezoneOffsetSeconds) {
+  if (!Array.isArray(list) || list.length === 0) return null;
+
+  const toDayKey = (dtSeconds) => {
+    const utcMs = dtSeconds * 1000;
+    const localMs = utcMs + timezoneOffsetSeconds * 1000;
+    const d = new Date(localMs);
+    return `${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}`;
+  };
+
+  const nowUtcSeconds = Math.floor(Date.now() / 1000);
+  const todayKey = toDayKey(nowUtcSeconds);
+
+  const todayItems = list.filter((it) => toDayKey(it.dt) === todayKey);
+  const pool = todayItems.length ? todayItems : list;
+
+  let min = Infinity;
+  let max = -Infinity;
+
+  for (const it of pool) {
+    const tMin = it?.main?.temp_min;
+    const tMax = it?.main?.temp_max;
+    if (typeof tMin === "number") min = Math.min(min, tMin);
+    if (typeof tMax === "number") max = Math.max(max, tMax);
+  }
+
+  if (!isFinite(min) || !isFinite(max)) return null;
+  return { min, max };
+}
+
 // ✅ tema por cidade (ajuste como quiser)
 function themeForCity(name) {
   switch (name) {
@@ -138,7 +169,10 @@ export default function City() {
 
   const slots = data?.list ? pickSlots(data.list, timezone) : [];
 
-  // stats (vem do forecast / city)
+  /** ✅ min/max do dia pra setas */
+  const dayRange = data?.list ? getTodayMinMax(data.list, timezone) : null;
+
+  // stats
   const windSpeed = currentLike?.wind?.speed;
   const humidity = currentLike?.main?.humidity;
   const sunrise = data?.city?.sunrise;
@@ -147,6 +181,8 @@ export default function City() {
   // ícone principal
   const mainWeatherId = currentLike?.weather?.[0]?.id;
   const mainOwmIcon = currentLike?.weather?.[0]?.icon;
+
+  const invert = theme.fg === "#ffffff";
 
   return (
     <main className="screen" style={{ background: theme.bg, color: theme.fg }}>
@@ -159,32 +195,49 @@ export default function City() {
 
         <h2 className="cityName">{city.name}</h2>
 
-        {/* ✅ descrição logo abaixo do nome */}
-        {!loading && description && (
-          <p className="weatherDesc">{description}</p>
-        )}
+        {!loading && description && <p className="weatherDesc">{description}</p>}
 
-        {loading && (
-          <p style={{ opacity: 0.7, marginTop: 18 }}>Loading...</p>
-        )}
+        {loading && <p style={{ opacity: 0.7, marginTop: 18 }}>Loading...</p>}
 
         {!loading && err && (
-          <p style={{ opacity: 0.8, marginTop: 18 }}>
-            Failed to load weather.
-          </p>
+          <p style={{ opacity: 0.8, marginTop: 18 }}>Failed to load weather.</p>
         )}
 
         {!loading && !err && currentLike && (
           <>
-            <div className="temp">
-              {Math.round(currentLike.main?.temp ?? 0)}
-              <span className="unit">°C</span>
+            {/* ✅ TEMP + MIN/MAX (setas) */}
+            <div className="tempRow">
+              <div className="temp">
+                {Math.round(currentLike.main?.temp ?? 0)}
+                <span className="unit">°C</span>
+              </div>
+
+              {dayRange && (
+                <div className="tempMinMax" aria-label="Min and max temperature">
+                  <div className="tempMinMaxItem">
+                    <img
+                      src="/icons/upperarrow.svg"
+                      alt=""
+                      className={`minMaxIcon ${invert ? "iconInvert" : ""}`}
+                    />
+                    <span>{Math.round(dayRange.max)}°</span>
+                  </div>
+
+                  <div className="tempMinMaxItem">
+                    <img
+                      src="/icons/arrowdown.svg"
+                      alt=""
+                      className={`minMaxIcon ${invert ? "iconInvert" : ""}`}
+                    />
+                    <span>{Math.round(dayRange.min)}°</span>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* ✅ ícone grande central */}
+            {/* ✅ ícone grande */}
             <div className="bigIcon">
-              {/* wrapper garante classe mesmo se WeatherIcon não aceitar className */}
-              <span className={theme.fg === "#ffffff" ? "iconInvert" : ""}>
+              <span className={invert ? "iconInvert" : ""}>
                 <WeatherIcon
                   weatherId={mainWeatherId}
                   owmIcon={mainOwmIcon}
@@ -194,7 +247,7 @@ export default function City() {
               </span>
             </div>
 
-            {/* ✅ Dawn/Morning/Afternoon/Night com ícone + temp (sem hora) */}
+            {/* ✅ slots com ícone + temp (sem hora) */}
             <div className="times">
               {slots.map((s) => {
                 const temp = s.item?.main?.temp;
@@ -205,26 +258,19 @@ export default function City() {
                   <div className="timeItem" key={s.label}>
                     <div className="timeLabel">{s.label}</div>
 
-                    <span className={theme.fg === "#ffffff" ? "iconInvert" : ""}>
-                      <WeatherIcon
-                        weatherId={wid}
-                        owmIcon={owm}
-                        size={22}
-                        alt=""
-                      />
+                    <span className={invert ? "iconInvert" : ""}>
+                      <WeatherIcon weatherId={wid} owmIcon={owm} size={22} alt="" />
                     </span>
 
                     <div className="timeValue">
                       {typeof temp === "number" ? `${Math.round(temp)}°C` : "--"}
                     </div>
-
-                    {/* removido: hora */}
                   </div>
                 );
               })}
             </div>
 
-            {/* ✅ stats row */}
+            {/* ✅ stats */}
             <div className="statsRow">
               <div className="stat">
                 <div className="statLabel">Wind speed</div>
@@ -237,18 +283,14 @@ export default function City() {
 
               <div className="stat">
                 <div className="statLabel">Sunrise</div>
-                <div className="statValue">
-                  {formatTimeFromUnix(sunrise, timezone)}
-                </div>
+                <div className="statValue">{formatTimeFromUnix(sunrise, timezone)}</div>
               </div>
 
               <div className="statDivider" />
 
               <div className="stat">
                 <div className="statLabel">Sunset</div>
-                <div className="statValue">
-                  {formatTimeFromUnix(sunset, timezone)}
-                </div>
+                <div className="statValue">{formatTimeFromUnix(sunset, timezone)}</div>
               </div>
 
               <div className="statDivider" />
