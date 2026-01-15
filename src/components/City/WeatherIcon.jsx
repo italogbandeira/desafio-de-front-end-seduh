@@ -1,19 +1,16 @@
+const BASE = import.meta.env.BASE_URL;
+
 const ICONS = {
-  sun: "/icons/sun.svg",
-  moon: "/icons/moon.svg",
-  cloudsun: "/icons/cloudsun.svg",
+  sun: `${BASE}icons/sun.svg`,
+  moon: `${BASE}icons/moon.svg`,
+  cloudsun: `${BASE}icons/cloudsun.svg`,
 };
 
 function pickIconKey(weatherId, owmIcon) {
   const isNight = String(owmIcon || "").endsWith("n");
 
-  // clear
   if (weatherId === 800) return isNight ? "moon" : "sun";
-
-  // clouds
   if (weatherId >= 801 && weatherId <= 804) return "cloudsun";
-
-  // chuva/neve/temporal/etc (fallback simples)
   if (weatherId >= 200 && weatherId < 800) return "cloudsun";
 
   return isNight ? "moon" : "sun";
@@ -40,6 +37,10 @@ export default function WeatherIcon({
       style={{
         display: "block",
         filter: invert ? "invert(1)" : "none",
+      }}
+      onError={(e) => {
+        console.error("Falhou carregar ícone:", src);
+        e.currentTarget.style.display = "none";
       }}
     />
   );
