@@ -216,7 +216,7 @@ export default function City() {
                 <div className="tempMinMax" aria-label="Min and max temperature">
                   <div className="tempMinMaxItem">
                     <img
-                      src="/icons/upperarrow.svg"
+                      src={`${import.meta.env.BASE_URL}icons/upperarrow.svg`}
                       alt=""
                       className={`minMaxIcon ${invert ? "iconInvert" : ""}`}
                     />
@@ -225,7 +225,7 @@ export default function City() {
 
                   <div className="tempMinMaxItem">
                     <img
-                      src="/icons/arrowdown.svg"
+                      src={`${import.meta.env.BASE_URL}icons/arrowdown.svg`}
                       alt=""
                       className={`minMaxIcon ${invert ? "iconInvert" : ""}`}
                     />
@@ -259,7 +259,12 @@ export default function City() {
                     <div className="timeLabel">{s.label}</div>
 
                     <span className={invert ? "iconInvert" : ""}>
-                      <WeatherIcon weatherId={wid} owmIcon={owm} size={22} alt="" />
+                      <WeatherIcon
+                        weatherId={wid}
+                        owmIcon={owm}
+                        size={22}
+                        alt=""
+                      />
                     </span>
 
                     <div className="timeValue">
@@ -283,14 +288,18 @@ export default function City() {
 
               <div className="stat">
                 <div className="statLabel">Sunrise</div>
-                <div className="statValue">{formatTimeFromUnix(sunrise, timezone)}</div>
+                <div className="statValue">
+                  {formatTimeFromUnix(sunrise, timezone)}
+                </div>
               </div>
 
               <div className="statDivider" />
 
               <div className="stat">
                 <div className="statLabel">Sunset</div>
-                <div className="statValue">{formatTimeFromUnix(sunset, timezone)}</div>
+                <div className="statValue">
+                  {formatTimeFromUnix(sunset, timezone)}
+                </div>
               </div>
 
               <div className="statDivider" />
